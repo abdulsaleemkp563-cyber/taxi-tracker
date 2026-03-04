@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Asma's Service Manager v19</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --p: #4338ca; --s: #059669; --e: #dc2626; --bg: #f1f5f9; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #1e293b; }
+        
+        header { 
+            background: var(--p); color: white; padding: 20px 15px 45px; text-align: center; 
+            border-radius: 0 0 30px 30px; box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
 
+        .container { padding: 12px; max-width: 100%; margin: auto; box-sizing: border-box; }
+
+        .tools-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .btn-tool { padding: 12px; border-radius: 12px; border: none; font-weight: 800; color: white; cursor: pointer; font-size: 13px; }
+        
+        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; }
+        label { display: block; font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
+        input { width: 100%; padding: 12px; border: 2.5px solid #e2e8f0; border-radius: 12px; font-size: 16px; box-sizing: border-box; margin-bottom: 12px; outline: none; }
+
+        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; background: var(--p); }
+
+        .table-wrapper { overflow-x: auto; background: white; border-radius: 15px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 450px; }
+        th { background: #f8fafc; padding: 12px 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
+        td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
+
+        .sum-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .sum-item { background: white; padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #e2e8f0; }
+        .sum-val { font-size: 14px; font-weight: 900; display: block; margin-top: 5px; }
+
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; padding: 12px 0; border-top: 1px solid #e2e8f0; }
+        .nav-link { flex: 1; text-align: center; font-size: 10px; font-weight: bold; color: #94a3b8; text-decoration: none; cursor: pointer; }
+        .nav-link.active { color: var(--p); }
+        .nav-icon { font-size: 20px; display: block; }
+
+        .hidden { display: none; }
+        @media print { .nav, .no-print, header, .tools-card button { display: none !important; } .container { padding: 0; } .table-wrapper { border: 1px solid #000; } }
+    </style>
+</head>
+<body>
+
+<header class="no-print">
+    <h1 style="margin:0; font-size:22px;">Asma's Service Manager</h1>
+    <p style="margin:5px 0 0; opacity:0.8; font-size:11px;">v19 - Fix Version</p>
+</header>
+
+<div class="container">
+    <div id="homePage" class="no-print">
+        <div class="card" onclick="nav('taxiPage')" style="border-left: 8px solid var(--p);">
+            <h2 style="margin:0">🚕 Taxi Trip</h2>
+            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">ട്രിപ്പ് വിവരങ്ങൾ ചേർക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക</p>
+        </div>
+        <div class="card" onclick="nav('expPage')" style="border-left: 8px solid var(--e);">
+            <h2 style="margin:0; color:var(--e)">💸 General Expense</h2>
+            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">മറ്റ് ചെലവുകൾ ഇവിടെ ചേർക്കാം</p>
+        </div>
+        <div class="card" onclick="nav('reportPage')" style="border-left: 8px solid var(--s);">
+            <h2 style="margin:0; color:var(--s)">📊 Daily Reports</h2>
+            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">കണക്കുകളും ബാക്കപ്പും പരിശോധിക്കാം</p>
+        </div>
+    </div>
+
+    <div id="taxiPage" class="hidden">
+        <div class="card">
+            <h3 style="margin-top:0">🚕 New Trip</h3>
+            <input type="hidden" id="t_id">
+            <label>Date</label><input type="date" id="t_date">
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label>Start KM</label><input type="number" id="t_s_km" value="0"></div>
+                <div style="flex:1"><label>End KM</label><input type="number" id="t_e_km" value="0"></div>
+            </div>
+            <div style="display:flex; gap:10px;">
+                <div style="flex:1"><label>Fuel Cost</label><input type="number" id="t_fuel" value="0"></div>
+                <div style="flex:1"><label>Other Cost</label><input type="number" id="t_other" value="0"></div>
+            </div>
+            <label>Rate Per KM</label><input type="number" id="t_rate" value="15">
+            <button class="btn-main" onclick="saveData('TAXI')">SAVE TRIP</button>
+        </div>
+    </div>
+
+    <div id="expPage" class="hidden">
+        <div class="card">
+            <h3 style="margin-top:0; color:var(--e)">💸 Add Expense</h3>
+            <input type="hidden" id="e_id">
+            <label>Date</label><input type="date" id="e_date">
+            <label>Description</label><input type="text" id="e_cat" placeholder="ഭക്ഷണം, വണ്ടി പണി...">
+            <label>Amount</label><input type="number" id="e_amt" value="0">
+            <button class="btn-main" style="background:var(--e)" onclick="saveData('EXPENSE')">SAVE EXPENSE</button>
+        </div>
+    </div>
+
+    <div id="reportPage" class="hidden">
+        <div class="tools-card no-print">
+            <div class="tool-grid">
+                <button class="btn-tool" style="background:#1e293b" onclick="exportData()">💾 BACKUP</button>
+                <button class="btn-tool" style="background:#4338ca" onclick="document.getElementById('impF').click()">📂 RESTORE</button>
+            </div>
+            <button class="btn-tool" style="background:#0891b2; width:100%" onclick="window.print()">🖨️ PRINT REPORT</button>
+            <input type="file" id="impF" class="hidden" onchange="importData(event)">
+            
+            <div style="margin-top:15px; display:flex; gap:8px;">
+                <div style="flex:1"><label>From</label><input type="date" id="f_from" onchange="render()" style="font-size:12px; margin:0"></div>
+                <div style="flex:1"><label>To</label><input type="date" id="f_to" onchange="render()" style="font-size:12px; margin:0"></div>
+            </div>
+        </div>
+
+        <div id="monthlyStats"></div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Date</th><th>Item</th><th>KM</th><th>Exp</th><th>Profit</th><th class="no-print">Edit</th></tr>
+                </thead>
+                <tbody id="reportTbody"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="nav no-print">
+    <div class="nav-link active" id="n_home" onclick="nav('homePage')"><span class="nav-icon">🏠</span>Home</div>
+    <div class="nav-link" id="n_taxi" onclick="nav('taxiPage')"><span class="nav-icon">🚕</span>Taxi</div>
+    <div class="nav-link" id="n_exp" onclick="nav('expPage')"><span class="nav-icon">💸</span>Exp</div>
+    <div class="nav-link" id="n_rep" onclick="nav('reportPage')"><span class="nav-icon">📊</span>Report</div>
+</div>
+
+<script>
+    const KEYS = ['asma_v18_final_fixed', 'asma_v17_smart', 'asma_v19_final'];
+    const ACTIVE_KEY = 'asma_v19_final';
+
+    function getCombinedData() {
+        let all = [];
+        KEYS.forEach(k => {
+            const data = JSON.parse(localStorage.getItem(k)) || [];
+            all = [...all, ...data];
+        });
+        return Array.from(new Map(all.map(item => [item.id, item])).values());
+    }
+
+    window.onload = () => { 
+        const today = new Date().toISOString().split('T')[0];
+        ['t_date','e_date','f_from','f_to'].forEach(id => {
+            if(document.getElementById(id)) document.getElementById(id).value = today;
+        });
+        const list = getCombinedData();
+        const last = list.filter(i => i.type === 'TAXI').sort((a,b) => b.id - a.id)[0];
+        if(last) document.getElementById('t_s_km').value = last.e_km;
+        render(); 
+    };
+
+    function nav(id) {
+        ['homePage', 'taxiPage', 'expPage', 'reportPage'].forEach(p => document.getElementById(p).classList.toggle('hidden', p !== id));
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        if(id==='homePage') document.getElementById('n_home').classList.add('active');
+        if(id==='taxiPage') document.getElementById('n_taxi').classList.add('active');
+        if(id==='expPage') document.getElementById('n_exp').classList.add('active');
+        if(id==='reportPage') { document.getElementById('n_rep').classList.add('active'); render(); }
+    }
+
+    function saveData(type) {
+        let list = getCombinedData();
+        const id = type === 'TAXI' ? document.getElementById('t_id').value : document.getElementById('e_id').value;
+        let d = { id: id ? parseInt(id) : Date.now(), type: type };
+
+        if(type === 'TAXI') {
+            const sk = parseFloat(document.getElementById('t_s_km').value)||0;
+            const ek = parseFloat(document.getElementById('t_e_km').value)||0;
+            const f = parseFloat(document.getElementById('t_fuel').value)||0;
+            const o = parseFloat(document.getElementById('t_other').value)||0;
+            const km = ek - sk;
+            const r = parseFloat(document.getElementById('t_rate').value)||0;
+            Object.assign(d, { date: document.getElementById('t_date').value, s_km: sk, e_km: ek, km: km, exp: f+o, profit: (km*r)-(f+o) });
+        } else {
+            Object.assign(d, { date: document.getElementById('e_date').value, cat: document.getElementById('e_cat').value, exp: parseFloat(document.getElementById('e_amt').value)||0, profit: 0 });
+        }
+
+        if(id) list = list.filter(i => i.id !== parseInt(id));
+        list.push(d); 
+        localStorage.setItem(ACTIVE_KEY, JSON.stringify(list));
+        alert("വിവരങ്ങൾ സേവ് ചെയ്തു!"); nav('reportPage');
+    }
+
+    function render() {
+        const list = getCombinedData();
+        const from = document.getElementById('f_from').value;
+        const to = document.getElementById('f_to').value;
+        const body = document.getElementById('reportTbody');
+        const mDiv = document.getElementById('monthlyStats');
+        body.innerHTML = ''; mDiv.innerHTML = '';
+
+        let mData = {};
+        list.sort((a,b) => b.id - a.id).forEach(i => {
+            let mKey = i.date ? i.date.substring(0, 7) : 'Unknown'; 
+            if(!mData[mKey]) mData[mKey] = { p: 0, e: 0, km: 0 };
+            if(i.type === 'TAXI') { mData[mKey].p += (i.profit||0); mData[mKey].km += (i.km||0); } 
+            else { mData[mKey].e += (i.exp||0); }
+
+            if(i.date >= from && i.date <= to) {
+                body.innerHTML += `<tr>
+                    <td>${i.date ? i.date.split('-').reverse().join('/') : '-'}</td>
+                    <td><b>${i.type==='TAXI'?'Taxi':(i.cat||'Expense')}</b></td>
+                    <td>${i.type==='TAXI'?i.km:'-'}</td>
+                    <td style="color:var(--e)">₹${i.exp||0}</td>
+                    <td style="color:${i.profit > 0 ? 'green':'black'}">₹${i.type==='TAXI'?(i.profit||0):'0'}</td>
+                    <td class="no-print"><span style="color:blue" onclick="editItem(${i.id})">Edit</span></td>
+                </tr>`;
+            }
+        });
+
+        Object.keys(mData).sort().reverse().forEach(m => {
+            if(m === 'Unknown') return;
+            const mName = new Date(m + "-01").toLocaleString('default', { month: 'short', year: 'numeric' });
+            mDiv.innerHTML += `
+                <div class="sum-row">
+                    <div class="sum-item"><span class="sum-label">Month</span><span class="sum-val" style="color:var(--p)">${mName}</span></div>
+                    <div class="sum-item"><span class="sum-label">Taxi Profit</span><span class="sum-val" style="color:var(--s)">₹${mData[m].p}</span></div>
+                    <div class="sum-item"><span class="sum-label">General Exp</span><span class="sum-val" style="color:var(--e)">₹${mData[m].e}</span></div>
+                    <div class="sum-item"><span class="sum-label">Balance</span><span class="sum-val">₹${mData[m].p - mData[m].e}</span></div>
+                </div>`;
+        });
+    }
+
+    function editItem(id) {
+        const item = getCombinedData().find(i => i.id === id);
+        if(!item) return;
+        if(item.type === 'TAXI') {
+            nav('taxiPage'); document.getElementById('t_id').value = item.id;
+            document.getElementById('t_date').value = item.date;
+            document.getElementById('t_s_km').value = item.s_km;
+            document.getElementById('t_e_km').value = item.e_km;
+            document.getElementById('t_rate').value = item.rate || 15;
+        } else {
+            nav('expPage'); document.getElementById('e_id').value = item.id;
+            document.getElementById('e_date').value = item.date;
+            document.getElementById('e_cat').value = item.cat;
+            document.getElementById('e_amt').value = item.exp;
+        }
+    }
+
+    function exportData() {
+        const data = JSON.stringify(getCombinedData());
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
+        a.download = `Asma_Service_Backup_${new Date().toLocaleDateString()}.json`;
+        a.click();
+    }
+
+    function importData(e) {
+        const r = new FileReader();
+        r.onload = (x) => { localStorage.setItem(ACTIVE_KEY, x.target.result); render(); alert("ഡാറ്റ വിജയകരമായി പുനഃസ്ഥാപിച്ചു!"); };
+        r.readAsText(e.target.files[0]);
+    }
+</script>
+</body>
+</html>
