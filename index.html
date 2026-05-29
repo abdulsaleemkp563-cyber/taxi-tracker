@@ -2,261 +2,451 @@
 <html lang="ml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Asma's Service Manager v19</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>KHATA PRO SECURE | Digital Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
-        :root { --p: #4338ca; --s: #059669; --e: #dc2626; --bg: #f1f5f9; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: #1e293b; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800;14..32,900&family=Manjari:wght@400;700&display=swap');
         
-        header { 
-            background: var(--p); color: white; padding: 20px 15px 45px; text-align: center; 
-            border-radius: 0 0 30px 30px; box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Inter', 'Manjari', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
         }
-
-        .container { padding: 12px; max-width: 100%; margin: auto; box-sizing: border-box; }
-
-        .tools-card { background: white; border-radius: 20px; padding: 15px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn-tool { padding: 12px; border-radius: 12px; border: none; font-weight: 800; color: white; cursor: pointer; font-size: 13px; }
         
-        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 20px; }
-        label { display: block; font-size: 10px; font-weight: 900; color: #64748b; margin-bottom: 5px; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; border: 2.5px solid #e2e8f0; border-radius: 12px; font-size: 16px; box-sizing: border-box; margin-bottom: 12px; outline: none; }
+        html, body { overflow: hidden; width: 100%; height: 100%; position: relative; }
+        
+        :root { --brand-yellow: #facc15; --header-gold: #b58916; --bg-dark-green: #0b2b22; }
+        
+        body.dark-mode { background: var(--bg-dark-green); color: #f1f5f9; }
+        body.dark-mode .card-bg { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(2px); }
+        body.dark-mode .input-field { background: rgba(0,0,0,0.45); color: white; border: 1px solid rgba(255,255,255,0.12); }
+        body.dark-mode .input-field::placeholder { color: #94a3b8; }
+        body.dark-mode .header-custom { background-color: #1f2937; color: white; border-bottom: 1px solid #facc15; }
+        body.dark-mode .modal-inner { background: #0f172ad9; backdrop-filter: blur(12px); color: white; border: 1px solid rgba(255,215,0,0.2); }
+        body.dark-mode .table-row-border { border-bottom: 1px solid rgba(255,255,255,0.06); }
+        body.dark-mode .text-main { color: #ffffff; }
+        body.dark-mode .text-date-custom { color: #facc15 !important; }
+        body.dark-mode .text-time-custom { color: #cbd5e6 !important; opacity: 0.8; }
 
-        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 15px; font-size: 16px; font-weight: bold; cursor: pointer; color: white; background: var(--p); }
-
-        .table-wrapper { overflow-x: auto; background: white; border-radius: 15px; border: 1px solid #e2e8f0; }
-        table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 450px; }
-        th { background: #f8fafc; padding: 12px 10px; text-align: left; border-bottom: 2px solid #e2e8f0; }
-        td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; }
-
-        .sum-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .sum-item { background: white; padding: 15px; border-radius: 18px; text-align: center; border: 1px solid #e2e8f0; }
-        .sum-val { font-size: 14px; font-weight: 900; display: block; margin-top: 5px; }
-
-        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: white; display: flex; padding: 12px 0; border-top: 1px solid #e2e8f0; }
-        .nav-link { flex: 1; text-align: center; font-size: 10px; font-weight: bold; color: #94a3b8; text-decoration: none; cursor: pointer; }
-        .nav-link.active { color: var(--p); }
-        .nav-icon { font-size: 20px; display: block; }
-
-        .hidden { display: none; }
-        @media print { .nav, .no-print, header, .tools-card button { display: none !important; } .container { padding: 0; } .table-wrapper { border: 1px solid #000; } }
+        body.light-mode { background: #f1f5f9; color: #0f172a; }
+        body.light-mode .card-bg { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 6px 12px -8px rgba(0,0,0,0.08); }
+        body.light-mode .input-field { background: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+        body.light-mode .input-field::placeholder { color: #94a3b8; }
+        body.light-mode .header-custom { background-color: #0f172a; color: white; border-bottom: 2px solid #facc15; }
+        body.light-mode .modal-inner { background: white; color: #0f172a; }
+        body.light-mode .table-row-border { border-bottom: 1px solid #e2e8f0; }
+        
+        /* FIXED: Date Search Text Color - making it visible */
+        .date-filter-input {
+            color: #1e293b !important;
+            background: #ffffff !important;
+            font-weight: 700 !important;
+        }
+        body.dark-mode .date-filter-input {
+            color: #facc15 !important;
+            background: #1e293b !important;
+        }
+        .clear-date-btn {
+            color: #dc2626 !important;
+            font-weight: 800 !important;
+            background: rgba(220,38,38,0.1) !important;
+        }
+        body.dark-mode .clear-date-btn {
+            color: #f87171 !important;
+        }
+        
+        /* Improved text visibility in modals */
+        .modal-inner input, .modal-inner textarea {
+            color: #1e293b !important;
+            background: #ffffff !important;
+            border: 1px solid #cbd5e1 !important;
+            font-weight: 600 !important;
+        }
+        body.dark-mode .modal-inner input, body.dark-mode .modal-inner textarea {
+            color: #f1f5f9 !important;
+            background: #1e293b !important;
+            border: 1px solid #475569 !important;
+        }
+        .modal-inner input::placeholder, .modal-inner textarea::placeholder {
+            color: #94a3b8 !important;
+            font-weight: 400 !important;
+        }
+        
+        /* Larger number display */
+        .amount-large-input {
+            font-size: 3rem !important;
+            font-weight: 900 !important;
+            text-align: center !important;
+            padding: 1.5rem 1rem !important;
+            letter-spacing: 4px !important;
+            line-height: 1.2 !important;
+        }
+        
+        input[type="number"] {
+            font-size: 2.2rem !important;
+        }
+        
+        /* LEDGER TABLE NUMBER SIZE INCREASED */
+        .trans-table td {
+            padding: 12px 4px;
+            font-size: 15px !important;
+            font-weight: 800 !important;
+        }
+        .trans-table td:nth-child(2),
+        .trans-table td:nth-child(3),
+        .trans-table td:nth-child(4) {
+            font-size: 16px !important;
+            font-weight: 800 !important;
+        }
+        
+        .icon-btn-box { background: rgba(255,255,255,0.12); width: 40px; height: 40px; border-radius: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; cursor: pointer; }
+        .icon-btn-box:active { transform: scale(0.92); background: rgba(250,204,21,0.2); }
+        
+        .yellow-card-premium { 
+            background: linear-gradient(135deg, #facc15 0%, #eab308 100%); 
+            color: #000000; padding: 20px 14px; border-radius: 2rem;
+            box-shadow: 0 15px 25px -8px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,200,0.4);
+        }
+        .trans-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .trans-table th { font-size: 11px; font-weight: 800; padding: 12px 4px; text-align: left; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid rgba(0,0,0,0.06); }
+        .rem-info { font-size: 10px; font-weight: 700; display: block; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; opacity: 0.8; }
+        body.dark-mode .rem-info { color: #fde047; }
+        body.light-mode .rem-info { color: #334155; }
+        .mode-badge { font-size: 8px; padding: 2px 6px; border-radius: 20px; background: rgba(0,0,0,0.08); font-weight: 800; margin-left: 6px; text-transform: uppercase; }
+        
+        .custom-scroll::-webkit-scrollbar { width: 3px; height: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #facc15; border-radius: 10px; }
+        
+        /* premium PIN pad */
+        .secure-key-pad-btn {
+            background: rgba(20, 30, 45, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #facc15;
+            font-size: 2rem;
+            font-weight: 800;
+            border-radius: 1.75rem;
+            transition: all 0.12s ease;
+            box-shadow: 0 8px 14px rgba(0,0,0,0.3);
+        }
+        .secure-key-pad-btn:active {
+            background: linear-gradient(145deg, #facc15 0%, #f59e0b 100%) !important;
+            color: #0f172a !important;
+            transform: scale(0.94);
+            border-color: white;
+        }
+        .dot-active {
+            background: #facc15 !important;
+            border-color: #facc15 !important;
+            box-shadow: 0 0 12px #facc15;
+            transform: scale(1.2);
+        }
+        
+        /* Button press animations */
+        .action-btn {
+            transition: transform 0.08s ease;
+        }
+        .action-btn:active {
+            transform: scale(0.96);
+        }
+        
+        /* Fix for footer buttons visibility */
+        #footerActions {
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 8px;
+        }
+        body.dark-mode #footerActions {
+            background: rgba(0,0,0,0.7);
+        }
     </style>
 </head>
-<body>
+<body class="light-mode h-full w-full flex flex-col overflow-hidden">
 
-<header class="no-print">
-    <h1 style="margin:0; font-size:22px;">Asma's Service Manager</h1>
-    <p style="margin:5px 0 0; opacity:0.8; font-size:11px;">v19 - Fix Version</p>
-</header>
+    <!-- SECURE PIN LOCK SCREEN -->
+    <div id="lockScreen" class="fixed inset-0 bg-gradient-to-br from-[#0a0f1c] to-[#071c14] z-[9999] flex flex-col items-center justify-between py-10 px-6 select-none">
+        <div class="text-center mt-6">
+            <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-amber-700 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl border border-amber-300/40">
+                <i class="fa-solid fa-shield-halved text-5xl text-black drop-shadow-md"></i>
+            </div>
+            <h2 class="text-2xl font-black text-white tracking-widest drop-shadow">KHATA PRO</h2>
+            <p id="lockScreenSubtitle" class="text-xs text-amber-300 font-bold uppercase mt-2 tracking-wider">🔐 Enter Secure PIN</p>
+        </div>
 
-<div class="container">
-    <div id="homePage" class="no-print">
-        <div class="card" onclick="nav('taxiPage')" style="border-left: 8px solid var(--p);">
-            <h2 style="margin:0">🚕 Taxi Trip</h2>
-            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">ട്രിപ്പ് വിവരങ്ങൾ ചേർക്കാൻ ഇവിടെ ക്ലിക്ക് ചെയ്യുക</p>
+        <div class="flex gap-5 my-6 bg-black/40 px-8 py-4 rounded-full border border-amber-500/40 backdrop-blur-sm">
+            <div id="dot-0" class="w-4 h-4 rounded-full border-2 border-amber-500/60 transition-all duration-200"></div>
+            <div id="dot-1" class="w-4 h-4 rounded-full border-2 border-amber-500/60 transition-all duration-200"></div>
+            <div id="dot-2" class="w-4 h-4 rounded-full border-2 border-amber-500/60 transition-all duration-200"></div>
+            <div id="dot-3" class="w-4 h-4 rounded-full border-2 border-amber-500/60 transition-all duration-200"></div>
         </div>
-        <div class="card" onclick="nav('expPage')" style="border-left: 8px solid var(--e);">
-            <h2 style="margin:0; color:var(--e)">💸 General Expense</h2>
-            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">മറ്റ് ചെലവുകൾ ഇവിടെ ചേർക്കാം</p>
+
+        <div class="w-full max-w-[310px] grid grid-cols-3 gap-4 mb-5">
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('1')">1</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('2')">2</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('3')">3</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('4')">4</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('5')">5</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('6')">6</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('7')">7</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('8')">8</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('9')">9</button>
+            <button class="text-amber-400 bg-black/30 rounded-xl font-extrabold text-sm tracking-wider flex items-center justify-center backdrop-blur-sm active:scale-95 transition" onclick="clearCurrentPin()">⌫ CLR</button>
+            <button class="secure-key-pad-btn aspect-square" onclick="pressKey('0')">0</button>
+            <button class="text-red-400 bg-black/30 rounded-xl font-extrabold text-sm tracking-wider flex items-center justify-center backdrop-blur-sm active:scale-95 transition" onclick="fullResetApp()">⚠️ RESET</button>
         </div>
-        <div class="card" onclick="nav('reportPage')" style="border-left: 8px solid var(--s);">
-            <h2 style="margin:0; color:var(--s)">📊 Daily Reports</h2>
-            <p style="margin:5px 0 0; color:#64748b; font-size:12px;">കണക്കുകളും ബാക്കപ്പും പരിശോധിക്കാം</p>
+        <div class="text-[9px] text-slate-400 font-mono">KHATA SECURE VAULT v3.0</div>
+    </div>
+
+    <!-- MAIN APPLICATION -->
+    <div class="w-full h-full flex flex-col overflow-hidden" id="mainApp" style="display:none;">
+        <header class="header-custom sticky top-0 z-40 shadow-xl w-full shrink-0">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <button id="backBtn" onclick="goHome()" class="hidden text-xl text-amber-400"><i class="fa-solid fa-arrow-left"></i></button>
+                    <h1 id="pageTitle" class="text-base font-black truncate max-w-[200px] uppercase tracking-wider">KHATA PRO SECURE</h1>
+                </div>
+                <div class="flex gap-2 shrink-0">
+                    <button id="custActionsMenuBtn" onclick="openActionsHubModal()" class="hidden icon-btn-box bg-amber-500/20 text-amber-400"><i class="fa-solid fa-bolt text-base"></i></button>
+                    <button id="custEditBtn" onclick="openCustModal(activeCid)" class="hidden icon-btn-box text-blue-300"><i class="fa-solid fa-user-pen"></i></button>
+                    <button onclick="toggleTheme()" class="icon-btn-box"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+                    <button onclick="lockApp()" class="icon-btn-box text-red-400"><i class="fa-solid fa-lock"></i></button>
+                    <button onclick="openSettings()" class="icon-btn-box"><i class="fa-solid fa-gear"></i></button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-md mx-auto w-full flex-1 flex flex-col p-3 overflow-hidden relative">
+            <!-- HOME VIEW -->
+            <div id="homeWorkspaceView" class="space-y-3 flex flex-col h-full w-full overflow-hidden">
+                <div id="promiseHeader" class="space-y-1.5 overflow-y-auto max-h-[130px] custom-scroll shrink-0"></div>
+                <div id="globalBalanceCard" class="shrink-0"></div>
+                <div id="searchBox" class="shrink-0">
+                    <div class="relative">
+                        <input type="text" oninput="searchQuery=this.value;renderClientListFeed()" placeholder="🔍 Search clients (Name / Phone)..." class="input-field w-full p-3.5 pl-4 pr-10 rounded-2xl outline-none font-bold text-sm shadow-sm">
+                        <i class="fa-solid fa-magnifying-glass absolute right-4 top-4 opacity-50 text-main"></i>
+                    </div>
+                </div>
+                <div id="mainClientListContainer" class="flex-1 overflow-y-auto space-y-2.5 custom-scroll pr-1"></div>
+                <div class="pt-1 shrink-0 pb-1">
+                    <button class="w-full p-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg rounded-2xl font-black text-white shadow-md flex items-center justify-center gap-2 transition action-btn" onclick="openCustModal()">
+                        <i class="fa-solid fa-user-plus"></i> ADD NEW CLIENT
+                    </button>
+                </div>
+            </div>
+
+            <!-- LEDGER DETAIL VIEW -->
+            <div id="ledgerWorkspaceView" class="hidden flex-col h-full w-full overflow-hidden relative">
+                <div class="sticky top-0 z-30 pb-2 shrink-0 space-y-2">
+                    <div id="topArea"></div>
+                    <div class="px-2 py-2 flex items-center justify-between gap-2 bg-black/5 dark:bg-white/5 border border-amber-500/20 rounded-2xl">
+                        <div class="flex gap-1 bg-black/10 dark:bg-black/40 rounded-xl p-0.5 text-[11px] font-black">
+                            <button id="typeFilterAll" onclick="setLedgerTypeFilter('ALL')" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 text-main shadow">All</button>
+                            <button id="typeFilterGave" onclick="setLedgerTypeFilter('GAVE')" class="px-3 py-1.5 rounded-lg text-slate-500">Gave</button>
+                            <button id="typeFilterGot" onclick="setLedgerTypeFilter('GOT')" class="px-3 py-1.5 rounded-lg text-slate-500">Got</button>
+                        </div>
+                        <div class="relative flex-1 max-w-[140px]">
+                            <input type="text" id="ledgerSearchInput" oninput="renderDetails()" placeholder="Filter..." class="w-full bg-black/10 dark:bg-black/30 border border-slate-500/20 rounded-xl py-2 pl-2 pr-6 text-xs font-bold outline-none text-main">
+                            <i class="fa-solid fa-search absolute right-2 top-2.5 opacity-50 text-xs"></i>
+                        </div>
+                        <button onclick="toggleDateFilterDrawer()" class="bg-amber-500/20 p-2 rounded-xl text-amber-600 dark:text-amber-400 action-btn"><i class="fa-solid fa-calendar-alt"></i></button>
+                    </div>
+
+                    <div id="dateFilterDrawer" class="hidden px-3 py-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2 text-main">
+                            <input type="date" id="filterStartDate" onchange="renderDetails()" class="p-2 rounded-xl outline-none text-xs font-bold date-filter-input">
+                            <span class="font-black text-amber-600 dark:text-amber-400">➡</span>
+                            <input type="date" id="filterEndDate" onchange="renderDetails()" class="p-2 rounded-xl outline-none text-xs font-bold date-filter-input">
+                        </div>
+                        <button onclick="clearDateRangeFilters()" class="clear-date-btn font-extrabold px-3 py-1.5 rounded-xl text-[10px]">✖ CLEAR</button>
+                    </div>
+
+                    <div id="dailyRow" class="grid grid-cols-2 gap-3 py-1"></div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto mt-1 custom-scroll w-full pb-32" style="margin-bottom: 80px;">
+                    <table class="trans-table">
+                        <thead class="sticky top-0 z-10 backdrop-blur-md bg-white/70 dark:bg-[#0b2b22]/90">
+                            <tr class="text-slate-500 dark:text-slate-400">
+                                <th style="width: 32%">Date & Note</th><th style="width: 22%">Gave</th><th style="width: 22%">Got</th><th style="width: 24%">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerItemsRowsContainer"></tbody>
+                    </table>
+                </div>
+
+                <div class="absolute bottom-0 left-0 right-0 z-40 pb-3 px-1">
+                    <div id="footerActions" class="flex gap-4 p-2 rounded-2xl shadow-lg"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="taxiPage" class="hidden">
-        <div class="card">
-            <h3 style="margin-top:0">🚕 New Trip</h3>
-            <input type="hidden" id="t_id">
-            <label>Date</label><input type="date" id="t_date">
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1"><label>Start KM</label><input type="number" id="t_s_km" value="0"></div>
-                <div style="flex:1"><label>End KM</label><input type="number" id="t_e_km" value="0"></div>
-            </div>
-            <div style="display:flex; gap:10px;">
-                <div style="flex:1"><label>Fuel Cost</label><input type="number" id="t_fuel" value="0"></div>
-                <div style="flex:1"><label>Other Cost</label><input type="number" id="t_other" value="0"></div>
-            </div>
-            <label>Rate Per KM</label><input type="number" id="t_rate" value="15">
-            <button class="btn-main" onclick="saveData('TAXI')">SAVE TRIP</button>
-        </div>
+    <!-- MODAL SYSTEM -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/80 hidden z-[1000] items-end justify-center p-3" onclick="closeModal()">
+        <div id="modalBox" class="w-full max-w-[440px] modal-inner p-6 rounded-3xl shadow-2xl overflow-y-auto max-h-[85vh] relative" onclick="event.stopPropagation()"></div>
     </div>
 
-    <div id="expPage" class="hidden">
-        <div class="card">
-            <h3 style="margin-top:0; color:var(--e)">💸 Add Expense</h3>
-            <input type="hidden" id="e_id">
-            <label>Date</label><input type="date" id="e_date">
-            <label>Description</label><input type="text" id="e_cat" placeholder="ഭക്ഷണം, വണ്ടി പണി...">
-            <label>Amount</label><input type="number" id="e_amt" value="0">
-            <button class="btn-main" style="background:var(--e)" onclick="saveData('EXPENSE')">SAVE EXPENSE</button>
-        </div>
-    </div>
+    <script>
+        // ===================== CORE DATABASE & STATE =====================
+        const STORAGE_ID = 'KHATA_PRO_SECURE_V3';
+        let db = JSON.parse(localStorage.getItem(STORAGE_ID)) || { customers: [], trans: [], promises: [], pin: '', upi: '', darkMode: false };
+        let activeCid = null, currentPinInput = "", searchQuery = "", currentLedgerTypeFilter = "ALL", tempFirstSetupPin = "";
+        const saveDB = () => { localStorage.setItem(STORAGE_ID, JSON.stringify(db)); render(); };
+        const getToday = () => new Date().toISOString().split('T')[0];
+        const fmtDate = (d) => d ? d.split('-').reverse().join('/').substring(0,5) : '';
 
-    <div id="reportPage" class="hidden">
-        <div class="tools-card no-print">
-            <div class="tool-grid">
-                <button class="btn-tool" style="background:#1e293b" onclick="exportData()">💾 BACKUP</button>
-                <button class="btn-tool" style="background:#4338ca" onclick="document.getElementById('impF').click()">📂 RESTORE</button>
-            </div>
-            <button class="btn-tool" style="background:#0891b2; width:100%" onclick="window.print()">🖨️ PRINT REPORT</button>
-            <input type="file" id="impF" class="hidden" onchange="importData(event)">
-            
-            <div style="margin-top:15px; display:flex; gap:8px;">
-                <div style="flex:1"><label>From</label><input type="date" id="f_from" onchange="render()" style="font-size:12px; margin:0"></div>
-                <div style="flex:1"><label>To</label><input type="date" id="f_to" onchange="render()" style="font-size:12px; margin:0"></div>
-            </div>
-        </div>
-
-        <div id="monthlyStats"></div>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr><th>Date</th><th>Item</th><th>KM</th><th>Exp</th><th>Profit</th><th class="no-print">Edit</th></tr>
-                </thead>
-                <tbody id="reportTbody"></tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="nav no-print">
-    <div class="nav-link active" id="n_home" onclick="nav('homePage')"><span class="nav-icon">🏠</span>Home</div>
-    <div class="nav-link" id="n_taxi" onclick="nav('taxiPage')"><span class="nav-icon">🚕</span>Taxi</div>
-    <div class="nav-link" id="n_exp" onclick="nav('expPage')"><span class="nav-icon">💸</span>Exp</div>
-    <div class="nav-link" id="n_rep" onclick="nav('reportPage')"><span class="nav-icon">📊</span>Report</div>
-</div>
-
-<script>
-    const KEYS = ['asma_v18_final_fixed', 'asma_v17_smart', 'asma_v19_final'];
-    const ACTIVE_KEY = 'asma_v19_final';
-
-    function getCombinedData() {
-        let all = [];
-        KEYS.forEach(k => {
-            const data = JSON.parse(localStorage.getItem(k)) || [];
-            all = [...all, ...data];
-        });
-        return Array.from(new Map(all.map(item => [item.id, item])).values());
-    }
-
-    window.onload = () => { 
-        const today = new Date().toISOString().split('T')[0];
-        ['t_date','e_date','f_from','f_to'].forEach(id => {
-            if(document.getElementById(id)) document.getElementById(id).value = today;
-        });
-        const list = getCombinedData();
-        const last = list.filter(i => i.type === 'TAXI').sort((a,b) => b.id - a.id)[0];
-        if(last) document.getElementById('t_s_km').value = last.e_km;
-        render(); 
-    };
-
-    function nav(id) {
-        ['homePage', 'taxiPage', 'expPage', 'reportPage'].forEach(p => document.getElementById(p).classList.toggle('hidden', p !== id));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        if(id==='homePage') document.getElementById('n_home').classList.add('active');
-        if(id==='taxiPage') document.getElementById('n_taxi').classList.add('active');
-        if(id==='expPage') document.getElementById('n_exp').classList.add('active');
-        if(id==='reportPage') { document.getElementById('n_rep').classList.add('active'); render(); }
-    }
-
-    function saveData(type) {
-        let list = getCombinedData();
-        const id = type === 'TAXI' ? document.getElementById('t_id').value : document.getElementById('e_id').value;
-        let d = { id: id ? parseInt(id) : Date.now(), type: type };
-
-        if(type === 'TAXI') {
-            const sk = parseFloat(document.getElementById('t_s_km').value)||0;
-            const ek = parseFloat(document.getElementById('t_e_km').value)||0;
-            const f = parseFloat(document.getElementById('t_fuel').value)||0;
-            const o = parseFloat(document.getElementById('t_other').value)||0;
-            const km = ek - sk;
-            const r = parseFloat(document.getElementById('t_rate').value)||0;
-            Object.assign(d, { date: document.getElementById('t_date').value, s_km: sk, e_km: ek, km: km, exp: f+o, profit: (km*r)-(f+o) });
-        } else {
-            Object.assign(d, { date: document.getElementById('e_date').value, cat: document.getElementById('e_cat').value, exp: parseFloat(document.getElementById('e_amt').value)||0, profit: 0 });
-        }
-
-        if(id) list = list.filter(i => i.id !== parseInt(id));
-        list.push(d); 
-        localStorage.setItem(ACTIVE_KEY, JSON.stringify(list));
-        alert("വിവരങ്ങൾ സേവ് ചെയ്തു!"); nav('reportPage');
-    }
-
-    function render() {
-        const list = getCombinedData();
-        const from = document.getElementById('f_from').value;
-        const to = document.getElementById('f_to').value;
-        const body = document.getElementById('reportTbody');
-        const mDiv = document.getElementById('monthlyStats');
-        body.innerHTML = ''; mDiv.innerHTML = '';
-
-        let mData = {};
-        list.sort((a,b) => b.id - a.id).forEach(i => {
-            let mKey = i.date ? i.date.substring(0, 7) : 'Unknown'; 
-            if(!mData[mKey]) mData[mKey] = { p: 0, e: 0, km: 0 };
-            if(i.type === 'TAXI') { mData[mKey].p += (i.profit||0); mData[mKey].km += (i.km||0); } 
-            else { mData[mKey].e += (i.exp||0); }
-
-            if(i.date >= from && i.date <= to) {
-                body.innerHTML += `<tr>
-                    <td>${i.date ? i.date.split('-').reverse().join('/') : '-'}</td>
-                    <td><b>${i.type==='TAXI'?'Taxi':(i.cat||'Expense')}</b></td>
-                    <td>${i.type==='TAXI'?i.km:'-'}</td>
-                    <td style="color:var(--e)">₹${i.exp||0}</td>
-                    <td style="color:${i.profit > 0 ? 'green':'black'}">₹${i.type==='TAXI'?(i.profit||0):'0'}</td>
-                    <td class="no-print"><span style="color:blue" onclick="editItem(${i.id})">Edit</span></td>
-                </tr>`;
+        function toggleTheme() { db.darkMode = !db.darkMode; saveDB(); }
+        function lockApp() { currentPinInput = ""; updateDots(); document.getElementById('lockScreen').style.display = 'flex'; document.getElementById('mainApp').style.display = 'none'; const sub = document.getElementById('lockScreenSubtitle'); if(!db.pin || db.pin === '') { sub.innerText = "✨ Create 4-digit Master PIN"; sub.classList.add('text-amber-300'); } else { sub.innerText = "🔒 Enter PIN to unlock"; sub.classList.remove('text-amber-300'); } }
+        function pressKey(n) { if(currentPinInput.length < 4) { currentPinInput += n; updateDots(); if(currentPinInput.length === 4) setTimeout(checkPin, 150); } }
+        function clearCurrentPin() { currentPinInput = ""; updateDots(); }
+        function updateDots() { for(let i=0;i<4;i++){ const el=document.getElementById(`dot-${i}`); if(i<currentPinInput.length){ el.style.background='#facc15'; el.style.borderColor='#facc15'; el.style.boxShadow='0 0 12px gold'; } else { el.style.background='transparent'; el.style.borderColor='#facc1570'; el.style.boxShadow='none'; } } }
+        
+        function checkPin() {
+            if(!db.pin || db.pin === '') {
+                if(!tempFirstSetupPin) { tempFirstSetupPin = currentPinInput; currentPinInput = ""; updateDots(); document.getElementById('lockScreenSubtitle').innerText = "✅ Confirm new PIN"; return; }
+                else { if(currentPinInput === tempFirstSetupPin) { db.pin = currentPinInput; tempFirstSetupPin=""; saveDB(); alert("✅ Secure PIN Activated"); document.getElementById('lockScreen').style.display='none'; document.getElementById('mainApp').style.display='flex'; render(); } else { alert("❌ PIN mismatch"); tempFirstSetupPin=""; currentPinInput=""; updateDots(); document.getElementById('lockScreenSubtitle').innerText = "Create 4-digit PIN"; } return; }
             }
-        });
-
-        Object.keys(mData).sort().reverse().forEach(m => {
-            if(m === 'Unknown') return;
-            const mName = new Date(m + "-01").toLocaleString('default', { month: 'short', year: 'numeric' });
-            mDiv.innerHTML += `
-                <div class="sum-row">
-                    <div class="sum-item"><span class="sum-label">Month</span><span class="sum-val" style="color:var(--p)">${mName}</span></div>
-                    <div class="sum-item"><span class="sum-label">Taxi Profit</span><span class="sum-val" style="color:var(--s)">₹${mData[m].p}</span></div>
-                    <div class="sum-item"><span class="sum-label">General Exp</span><span class="sum-val" style="color:var(--e)">₹${mData[m].e}</span></div>
-                    <div class="sum-item"><span class="sum-label">Balance</span><span class="sum-val">₹${mData[m].p - mData[m].e}</span></div>
-                </div>`;
-        });
-    }
-
-    function editItem(id) {
-        const item = getCombinedData().find(i => i.id === id);
-        if(!item) return;
-        if(item.type === 'TAXI') {
-            nav('taxiPage'); document.getElementById('t_id').value = item.id;
-            document.getElementById('t_date').value = item.date;
-            document.getElementById('t_s_km').value = item.s_km;
-            document.getElementById('t_e_km').value = item.e_km;
-            document.getElementById('t_rate').value = item.rate || 15;
-        } else {
-            nav('expPage'); document.getElementById('e_id').value = item.id;
-            document.getElementById('e_date').value = item.date;
-            document.getElementById('e_cat').value = item.cat;
-            document.getElementById('e_amt').value = item.exp;
+            if(currentPinInput === db.pin) { document.getElementById('lockScreen').style.display='none'; document.getElementById('mainApp').style.display='flex'; render(); } else { alert("⛔ Invalid PIN"); currentPinInput=""; updateDots(); }
         }
-    }
+        function fullResetApp() { if(confirm("⚠️ PERMANENT DELETE: All clients, transactions and data will be erased. Reset PIN?")) { localStorage.removeItem(STORAGE_ID); location.reload(); } }
 
-    function exportData() {
-        const data = JSON.stringify(getCombinedData());
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([data], {type: 'application/json'}));
-        a.download = `Asma_Service_Backup_${new Date().toLocaleDateString()}.json`;
-        a.click();
-    }
+        // ===================== RENDERING ENGINE =====================
+        function render() { 
+            document.body.className = db.darkMode ? 'dark-mode' : 'light-mode';
+            document.getElementById('themeIcon').className = db.darkMode ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            renderPromises(); renderGlobalBalanceCard(); renderClientListFeed();
+            if(activeCid) renderDetails(); else goHome();
+        }
+        function renderPromises() { let h=""; db.promises.forEach(p=>{ const c=db.customers.find(x=>x.id===p.cid); if(!c) return; h+=`<div class="p-3 rounded-xl flex justify-between items-center card-bg shadow-sm action-btn transition" onclick="openCustomer(${c.id})"><div class="flex-1"><h3 class="font-bold text-xs text-main">${c.name}: ₹${Number(p.amt).toFixed(2)}</h3><p class="text-[9px] opacity-60 text-main">Promise by: ${fmtDate(p.date)}</p></div><div class="flex gap-2"><button onclick="event.stopPropagation();settlePromise(${p.id})" class="w-7 h-7 bg-emerald-600 rounded-xl flex items-center justify-center text-white text-xs shadow action-btn"><i class="fa-solid fa-hand-holding-usd"></i></button><button onclick="event.stopPropagation();deletePromise(${p.id})" class="w-7 h-7 bg-rose-600 rounded-xl flex items-center justify-center text-white text-xs action-btn"><i class="fa-solid fa-trash"></i></button></div></div>`; });
+            document.getElementById('promiseHeader').innerHTML = h || `<div class="text-center text-[11px] opacity-50 py-2 text-main">📌 No active payment promises</div>`;
+        }
+        function renderGlobalBalanceCard() { let tGave=0,tGot=0; db.trans.forEach(t=>{ if(t.type==='GAVE') tGave+=t.amt; else tGot+=t.amt; }); const net=tGave-tGot; const statusLabel=net>=0?"💰 TOTAL OUTSTANDING (To Receive)":"💸 TOTAL ADVANCE (To Pay)"; document.getElementById('globalBalanceCard').innerHTML=`<div class="yellow-card-premium text-center"><p class="text-[10px] font-black opacity-80 uppercase tracking-wider">${statusLabel}</p><h2 class="text-4xl font-black mt-1 tracking-tight">₹${Math.abs(net).toFixed(2)}</h2></div>`; }
+        function renderClientListFeed() { let filtered=db.customers.filter(c=>c.name.toLowerCase().includes(searchQuery.toLowerCase())||(c.phone&&c.phone.includes(searchQuery))).sort((a,b)=>a.name.localeCompare(b.name)); let html=""; filtered.forEach(c=>{ let bal=0; db.trans.filter(t=>t.cid===c.id).forEach(t=>bal+=(t.type==='GAVE'?t.amt:-t.amt)); html+=`<div class="flex items-center p-4 rounded-2xl card-bg cursor-pointer transition action-btn" onclick="openCustomer(${c.id})"><div class="w-11 h-11 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center font-black text-white text-lg shadow-md">${c.name[0].toUpperCase()}</div><div class="flex-1 ml-3 min-w-0"><p class="font-black text-sm truncate text-main">${c.name}</p><p class="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5"><i class="fa-solid fa-phone-alt text-[9px]"></i> ${c.phone || '—'}</p></div><div class="text-right"><p class="font-black text-base ${bal>=0?'text-rose-500':'text-emerald-500'}">₹${Math.abs(bal).toFixed(2)}</p><span class="text-[9px] font-bold uppercase text-main/50">${bal>=0?'Gave':'Got'}</span></div></div>`; }); document.getElementById('mainClientListContainer').innerHTML=html||`<div class="text-center text-slate-400 py-10 text-sm">🤝 No clients yet. Add +</div>`; }
+        
+        function setLedgerTypeFilter(f) { currentLedgerTypeFilter=f; ['ALL','GAVE','GOT'].forEach(lbl=>{ const btn=document.getElementById(`typeFilter${lbl}`); if(btn) btn.className=lbl===f?'px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 text-main shadow':'px-3 py-1.5 rounded-lg text-slate-500'; }); renderDetails(); }
+        function toggleDateFilterDrawer() { document.getElementById('dateFilterDrawer').classList.toggle('hidden'); }
+        function clearDateRangeFilters() { document.getElementById('filterStartDate').value=''; document.getElementById('filterEndDate').value=''; renderDetails(); }
+        
+        function openCustomer(id) { activeCid=id; currentLedgerTypeFilter="ALL"; document.getElementById('homeWorkspaceView').classList.add('hidden'); document.getElementById('ledgerWorkspaceView').classList.remove('hidden'); document.getElementById('ledgerWorkspaceView').classList.add('flex'); render(); }
+        function goHome() { activeCid=null; document.getElementById('backBtn').classList.add('hidden'); document.getElementById('custEditBtn').classList.add('hidden'); document.getElementById('custActionsMenuBtn').classList.add('hidden'); document.getElementById('pageTitle').innerText="KHATA PRO SECURE"; document.getElementById('ledgerWorkspaceView').classList.add('hidden'); document.getElementById('homeWorkspaceView').classList.remove('hidden'); renderClientListFeed(); }
+        
+        function renderDetails() {
+            const cust=db.customers.find(c=>c.id===activeCid); if(!cust){goHome();return;}
+            document.getElementById('backBtn').classList.remove('hidden'); document.getElementById('custEditBtn').classList.remove('hidden'); document.getElementById('custActionsMenuBtn').classList.remove('hidden'); document.getElementById('pageTitle').innerText=cust.name;
+            let rb=0,cToday=0,uToday=0,mGave=0,mGot=0,today=getToday(),now=new Date();
+            let trans=db.trans.filter(t=>t.cid===activeCid).sort((a,b)=>new Date(a.date)-new Date(b.date));
+            const ledSearch=document.getElementById('ledgerSearchInput')?.value.toLowerCase()||"", sDate=document.getElementById('filterStartDate')?.value||"", eDate=document.getElementById('filterEndDate')?.value||"";
+            let rowsArray=[], cumulative=0;
+            trans.forEach(t=>{ cumulative+=(t.type==='GAVE'?t.amt:-t.amt); rb=cumulative; const d=new Date(t.date); if(d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()){ if(t.type==='GAVE') mGave+=t.amt; else mGot+=t.amt; } if(t.date===today){ if(t.mode==='UPI') uToday+=t.amt; else if(t.type==='GOT') cToday+=t.amt; } });
+            let filteredTrans=trans.filter(t=>{ if(currentLedgerTypeFilter!=='ALL'&&t.type!==currentLedgerTypeFilter) return false; if(sDate&&t.date<sDate) return false; if(eDate&&t.date>eDate) return false; if(ledSearch&&!t.rem.toLowerCase().includes(ledSearch)&&!t.amt.toString().includes(ledSearch)) return false; return true; });
+            let running=0; 
+            filteredTrans.forEach(t=>{ 
+                running+=(t.type==='GAVE'?t.amt:-t.amt); 
+                const row=`<tr class="table-row-border hover:bg-amber-500/5 cursor-pointer transition" onclick="openEditTrans(${t.id})">
+                    <td class="p-2 text-xs"><div><div class="flex items-center"><span class="font-black text-sm text-date-custom">${fmtDate(t.date)}</span><span class="mode-badge ${t.mode==='UPI'?'bg-blue-100 text-blue-700':'bg-emerald-100 text-emerald-700'}">${t.mode||'CASH'}</span></div>${t.time?`<span class="text-[10px] font-mono text-time-custom">${t.time}</span>`:''}<span class="rem-info">${t.rem||'—'}</span></div></td>
+                    <td class="p-2 text-rose-600 font-black" style="font-size: 16px; font-weight:800;">${t.type==='GAVE'? '₹'+t.amt.toFixed(0):'-'}</td>
+                    <td class="p-2 text-emerald-600 font-black" style="font-size: 16px; font-weight:800;">${t.type==='GOT'? '₹'+t.amt.toFixed(0):'-'}</td>
+                    <td class="p-2 ${running>=0?'text-rose-500':'text-emerald-500'} font-black" style="font-size: 16px; font-weight:800;">₹${Math.abs(running).toFixed(0)}</td>
+                </tr>`; 
+                rowsArray.unshift(row); 
+            });
+            const netValText=rb>=0?"📌 CURRENT OUTSTANDING":"⚡ CURRENT ADVANCE"; 
+            document.getElementById('topArea').innerHTML=`<div class="yellow-card-premium text-center"><p class="text-[9px] font-black opacity-80">${netValText}</p><h2 class="text-3xl font-black">₹${Math.abs(rb).toFixed(2)}</h2><div class="grid grid-cols-3 gap-1 bg-black/10 rounded-xl p-2 mt-2 text-[10px] font-black"><div><p class="opacity-70">MONTH GAVE</p><p class="text-rose-600">₹${mGave.toFixed(0)}</p></div><div><p class="opacity-70">MONTH GOT</p><p class="text-emerald-600">₹${mGot.toFixed(0)}</p></div><div><p class="opacity-70">NET MONTH</p><p class="${(mGave-mGot)>=0?'text-rose-600':'text-emerald-600'}">₹${Math.abs(mGave-mGot).toFixed(0)}</p></div></div></div>`;
+            document.getElementById('dailyRow').innerHTML=`<div class="bg-emerald-500/10 p-2 rounded-xl text-center"><span class="text-[10px] font-black">💰 CASH TODAY: </span><span class="font-black text-emerald-700">₹${cToday.toFixed(0)}</span></div><div class="bg-blue-500/10 p-2 rounded-xl text-center"><span class="text-[10px] font-black">📱 UPI TODAY: </span><span class="font-black text-blue-700">₹${uToday.toFixed(0)}</span></div>`;
+            document.getElementById('ledgerItemsRowsContainer').innerHTML=rowsArray.length?rowsArray.join(''):`<tr><td colspan="4" class="text-center py-12 opacity-50 text-xs">📭 No records with filters</td></tr>`;
+            document.getElementById('footerActions').innerHTML=`<button class="flex-1 p-4 bg-rose-600 hover:bg-rose-700 rounded-2xl font-black text-white shadow-xl action-btn transition" onclick="openAdd('GAVE')"><i class="fa-solid fa-hand-holding-dollar mr-2"></i> GAVE</button><button class="flex-1 p-4 bg-emerald-600 hover:bg-emerald-700 rounded-2xl font-black text-white shadow-xl action-btn transition" onclick="openAdd('GOT')"><i class="fa-solid fa-receipt mr-2"></i> GOT</button>`;
+        }
 
-    function importData(e) {
-        const r = new FileReader();
-        r.onload = (x) => { localStorage.setItem(ACTIVE_KEY, x.target.result); render(); alert("ഡാറ്റ വിജയകരമായി പുനഃസ്ഥാപിച്ചു!"); };
-        r.readAsText(e.target.files[0]);
-    }
-</script>
+        function openCustModal(cid=null){ const c=cid?db.customers.find(x=>x.id===cid):{name:'',phone:''}; openModal(`<h2 class="text-xl font-black mb-4 text-center">${cid?'✏️ EDIT CLIENT':'🌟 ADD CLIENT'}</h2><div class="space-y-4"><input id="cn" class="w-full p-4 rounded-2xl font-bold border" placeholder="Full Name" value="${c.name}"><input id="cp" type="tel" class="w-full p-4 rounded-2xl font-bold border" placeholder="Phone Number" value="${c.phone}"><button class="w-full p-4 bg-indigo-600 text-white font-black rounded-2xl action-btn" onclick="saveCust(${cid})">💾 SAVE PROFILE</button><button class="w-full text-xs opacity-70" onclick="closeModal()">Cancel</button>${cid?`<div class="pt-2"><button class="w-full p-3 bg-rose-600/20 text-rose-600 rounded-xl font-bold action-btn" onclick="deleteFullCust(${cid})">🗑️ DELETE CLIENT & LEDGER</button></div>`:''}</div>`); }
+        function saveCust(cid){ let n=document.getElementById('cn').value.trim(), p=document.getElementById('cp').value.trim(); if(!n) return alert("Name required"); if(cid){ let c=db.customers.find(x=>x.id===cid); c.name=n; c.phone=p; } else { const newId=Date.now(); db.customers.push({id:newId,name:n,phone:p}); activeCid=newId; } saveDB(); closeModal(); openCustomer(activeCid); }
+        function deleteFullCust(cid){ if(confirm("DELETE all data of this client?")){ db.customers=db.customers.filter(x=>x.id!==cid); db.trans=db.trans.filter(x=>x.cid!==cid); db.promises=db.promises.filter(x=>x.cid!==cid); activeCid=null; saveDB(); closeModal(); goHome(); } }
+        
+        function openAdd(type){ 
+            const timeStr=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',hour12:true}); 
+            openModal(`
+                <h2 class="font-black text-center text-xl mb-3" style="color: inherit;">${type==='GAVE'?'📤 GAVE MONEY':'📥 GOT MONEY'}</h2>
+                <div class="space-y-4">
+                    <input id="ta" type="number" step="0.01" class="w-full amount-large-input rounded-2xl border" placeholder="₹ 0" autofocus style="font-size: 3rem !important; padding: 1.5rem !important; text-align: center; font-weight: 900; letter-spacing: 4px;">
+                    <div class="flex gap-3">
+                        <button id="mCash" onclick="setM('CASH')" class="flex-1 py-4 rounded-xl border font-black text-base action-btn">💵 CASH</button>
+                        <button id="mUpi" onclick="setM('UPI')" class="flex-1 py-4 rounded-xl border font-black text-base action-btn">📲 UPI</button>
+                    </div>
+                    <input id="tr" class="w-full p-4 rounded-xl border font-semibold" placeholder="Remarks / Notes" style="font-size: 1rem;">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input id="td" type="date" class="p-4 rounded-xl border font-semibold" value="${getToday()}" style="font-size: 0.95rem;">
+                        <input id="tt" type="text" class="p-4 rounded-xl border font-semibold" value="${timeStr}" style="font-size: 0.95rem;">
+                    </div>
+                    <input type="hidden" id="tm" value="CASH">
+                    <button class="w-full py-5 bg-blue-600 text-white font-black rounded-2xl text-xl shadow-lg action-btn transition" onclick="saveTrans('${type}')">✅ SAVE TRANSACTION</button>
+                    <button class="w-full py-3 text-slate-500 font-bold text-sm" onclick="closeModal()">Cancel</button>
+                </div>
+            `);
+            setM('CASH');
+        }
+        
+        function setM(m){ 
+            document.getElementById('tm').value=m; 
+            const cashBtn=document.getElementById('mCash'); 
+            const upiBtn=document.getElementById('mUpi'); 
+            if(m==='CASH'){ 
+                cashBtn.className='flex-1 py-4 rounded-xl bg-amber-400 text-black font-black text-base shadow-md action-btn'; 
+                upiBtn.className='flex-1 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-slate-700 dark:text-white font-bold text-base action-btn'; 
+            } else { 
+                cashBtn.className='flex-1 py-4 rounded-xl bg-gray-200 dark:bg-gray-700 text-slate-700 dark:text-white font-bold text-base action-btn'; 
+                upiBtn.className='flex-1 py-4 rounded-xl bg-blue-600 text-white font-black text-base shadow-md action-btn'; 
+            } 
+        }
+        
+        function saveTrans(type){ 
+            let a=parseFloat(document.getElementById('ta').value); 
+            if(isNaN(a)||a<=0) return alert("Please enter valid amount"); 
+            let d=document.getElementById('td').value, r=document.getElementById('tr').value.trim(), m=document.getElementById('tm').value, t=document.getElementById('tt').value; 
+            if(a&&d){ 
+                db.trans.push({id:Date.now(),cid:activeCid,type,amt:a,date:d,time:t,rem:r,mode:m}); 
+                saveDB(); closeModal(); 
+            } 
+        }
+        
+        function openEditTrans(tid){ const t=db.trans.find(x=>x.id===tid); openModal(`<h2 class="font-black text-center text-xl">✏️ EDIT ENTRY</h2><div class="space-y-3"><input id="eta" type="number" step="0.01" class="w-full amount-large-input rounded-2xl border" value="${t.amt}" style="font-size: 2.8rem; text-align:center; font-weight:900;"><input id="etr" class="w-full mt-2 p-4 rounded-xl border" value="${t.rem||''}" placeholder="Remarks"><div class="grid grid-cols-2 gap-2 mt-2 opacity-70"><input value="${t.date}" disabled class="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl"><input value="${t.time||''}" disabled class="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl"></div><button class="w-full mt-3 p-4 bg-blue-600 text-white font-black rounded-xl action-btn" onclick="updateTrans(${tid})">UPDATE</button><button class="w-full mt-2 p-4 bg-red-600 text-white rounded-xl action-btn" onclick="deleteTrans(${tid})">DELETE</button><button class="w-full mt-2 text-slate-400 text-sm" onclick="closeModal()">Cancel</button></div>`); }
+        function updateTrans(tid){ let t=db.trans.find(x=>x.id===tid); t.amt=Number(document.getElementById('eta').value); t.rem=document.getElementById('etr').value.trim(); saveDB(); closeModal(); }
+        function deleteTrans(tid){ if(confirm("Delete entry?")){ db.trans=db.trans.filter(x=>x.id!==tid); saveDB(); closeModal(); } }
+        
+        function openSettings() { 
+            openModal(`
+                <h2 class="font-black text-center text-xl mb-4">⚙️ SECURE SETTINGS</h2>
+                <div class="space-y-4">
+                    <div><label class="text-[11px] uppercase font-bold tracking-wider text-slate-500">UPI ID</label><input id="upiI" class="w-full p-4 rounded-xl border font-semibold text-base" value="${db.upi || ''}" placeholder="example@okhdfcbank"></div>
+                    <div><label class="text-[11px] uppercase font-bold tracking-wider text-slate-500">4-DIGIT PIN</label><input id="pinI" type="password" maxlength="4" class="w-full p-4 rounded-xl border font-semibold text-base" value="${db.pin || ''}" placeholder="****"></div>
+                    <button class="w-full p-4 bg-blue-600 text-white font-black rounded-xl text-lg shadow-md action-btn" onclick="saveSettings()">💾 SAVE CHANGES</button>
+                    <div class="grid grid-cols-2 gap-3 pt-2"><button class="p-4 bg-emerald-700 text-white rounded-xl font-bold text-sm action-btn" onclick="exportData()">📁 BACKUP DATA</button><button class="p-4 bg-purple-700 text-white rounded-xl font-bold text-sm action-btn" onclick="document.getElementById('imp').click()">🔄 RESTORE BACKUP</button></div>
+                    <button class="w-full p-4 bg-rose-700 text-white rounded-xl font-bold text-sm action-btn" onclick="fullResetApp()">⚠️ DELETE ALL DATA</button>
+                    <button class="w-full py-3 text-slate-400 font-bold text-sm" onclick="closeModal()">Close</button>
+                    <input type="file" id="imp" class="hidden" onchange="importData(event)">
+                </div>
+            `);
+        }
+        function saveSettings() { const newUpi = document.getElementById('upiI').value.trim(); const newPin = document.getElementById('pinI').value; if(newPin && newPin.length !== 4 && newPin.length !== 0) { alert("PIN must be exactly 4 digits"); return; } db.upi = newUpi; if(newPin && newPin.length === 4) { db.pin = newPin; } saveDB(); alert("✅ Settings saved!"); closeModal(); }
+        function exportData(){ const blob=new Blob([JSON.stringify(db)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`khata_backup_${getToday()}.json`; a.click(); }
+        function importData(e){ const reader=new FileReader(); reader.onload=ev=>{ try{ db=JSON.parse(ev.target.result); saveDB(); alert("✅ Restore successful! Reloading..."); location.reload(); }catch(err){ alert("❌ Invalid backup file"); } }; reader.readAsText(e.target.files[0]); }
+        function openActionsHubModal(){ const cust=db.customers.find(c=>c.id===activeCid); if(!cust) return; let rb=0; db.trans.filter(t=>t.cid===activeCid).forEach(t=>rb+=(t.type==='GAVE'?t.amt:-t.amt)); openModal(`<h2 class="font-black text-center mb-3 text-lg">⚡ QUICK ACTIONS</h2><div class="grid grid-cols-5 gap-3"><button onclick="closeModal();shareWA('${cust.phone}',${rb.toFixed(2)})" class="bg-green-600 text-white p-3 rounded-2xl text-xs action-btn"><i class="fab fa-whatsapp text-lg"></i><div>WA</div></button><button onclick="closeModal();openQR(${Math.abs(rb).toFixed(2)})" class="bg-purple-600 text-white p-3 rounded-2xl action-btn"><i class="fas fa-qrcode text-lg"></i><div>QR</div></button><button onclick="closeModal();openPDFModal()" class="bg-blue-600 text-white p-3 rounded-2xl action-btn"><i class="fas fa-file-pdf text-lg"></i><div>PDF</div></button><button onclick="closeModal();toggleDateFilterDrawer()" class="bg-amber-500 text-white p-3 rounded-2xl action-btn"><i class="fas fa-calendar"></i><div>Filter</div></button><button onclick="closeModal();openPromiseModal()" class="bg-orange-600 text-white p-3 rounded-2xl action-btn"><i class="fas fa-clock"></i><div>Promise</div></button></div><button class="w-full mt-4 text-slate-400 text-sm" onclick="closeModal()">Close</button>`); }
+        function openPromiseModal(){ openModal(`<h2 class="font-black text-center text-lg">📅 Promise to Pay</h2><input id="pa" type="number" class="w-full p-5 rounded-xl border my-3 text-2xl text-center font-black" placeholder="Amount"><input id="pd" type="date" class="w-full p-4 rounded-xl border" value="${getToday()}"><button class="w-full p-3 bg-indigo-600 text-white font-black rounded-xl mt-3 action-btn" onclick="savePromise()">Set Promise</button>`); }
+        function savePromise(){ let a=document.getElementById('pa').value, d=document.getElementById('pd').value; if(a&&d){ db.promises.push({id:Date.now(),cid:activeCid,amt:a,date:d}); saveDB(); closeModal(); } }
+        function settlePromise(id){ const p=db.promises.find(x=>x.id===id); const timeStr=new Date().toLocaleTimeString(); db.trans.push({id:Date.now(),cid:p.cid,type:'GOT',amt:Number(p.amt),date:getToday(),time:timeStr,mode:'CASH',rem:'Promise settled'}); db.promises=db.promises.filter(x=>x.id!==id); saveDB(); }
+        function deletePromise(id){ if(confirm("Delete promise?")){ db.promises=db.promises.filter(x=>x.id!==id); saveDB(); } }
+        function openPDFModal(){ openModal(`<div><h2 class="font-black text-center">📄 Generate Statement</h2><div class="grid grid-cols-2 gap-2 my-3"><input id="ps" type="date" class="p-4 border rounded-xl" value="2025-01-01"><input id="pe" type="date" class="p-4 border rounded-xl" value="${getToday()}"></div><button class="w-full p-4 bg-blue-600 text-white rounded-xl font-black action-btn" onclick="generatePDF()">CREATE PDF</button></div>`); }
+        function generatePDF(){ const s=document.getElementById('ps').value, e=document.getElementById('pe').value, cust=db.customers.find(c=>c.id===activeCid); const filtered=db.trans.filter(t=>t.cid===activeCid&&t.date>=s&&t.date<=e).sort((a,b)=>new Date(a.date)-new Date(b.date)); const el=document.createElement('div'); el.style.padding='25px'; el.style.background='#fff'; el.style.color='#000000'; let rt=0; let rows=filtered.map(t=>{ rt+=(t.type==='GAVE'?t.amt:-t.amt); return `<tr><td style="border:1px solid #ccc;padding:6px;color:#000000;">${fmtDate(t.date)} ${t.time||''}</td><td style="border:1px solid #ccc;color:#dc2626;font-weight:700;">${t.type==='GAVE'?'₹'+t.amt.toFixed(2):'-'}</td><td style="border:1px solid #ccc;color:#059669;font-weight:700;">${t.type==='GOT'?'₹'+t.amt.toFixed(2):'-'}</td><td style="border:1px solid #ccc;color:#000000;font-weight:700;">₹${rt.toFixed(2)}</td></tr>`; }).join(''); el.innerHTML=`<div style="color:#000000;"><h2 style="text-align:center;color:#000000;">KHATA PRO LEDGER</h2><p style="color:#000000;"><strong>${cust.name}</strong> | ${cust.phone||''}</p><p style="color:#000000;">Period: ${fmtDate(s)} - ${fmtDate(e)}</p><table style="width:100%;border-collapse:collapse;color:#000000;">${rows}</table><h3 style="color:#000000;">Closing: ₹${Math.abs(rt).toFixed(2)}</h3></div>`; html2pdf().set({margin:0.5,filename:`${cust.name}_statement.pdf`}).from(el).save(); }
+        function openQR(amt){ if(!db.upi) return alert("Set UPI ID in settings"); openModal(`<div class="bg-white p-4 rounded-3xl text-center"><div id="qr" class="mb-3 flex justify-center"></div><p class="font-black text-2xl">₹${amt}</p><button onclick="closeModal()" class="mt-3 p-2 bg-gray-200 rounded-xl w-full">Close</button></div>`); new QRCode(document.getElementById("qr"),{text:`upi://pay?pa=${db.upi}&am=${amt}&cu=INR`,width:160,height:160}); }
+        function shareWA(p,b){ if(!p||p==='-') return alert("Phone missing"); const msg=`KHATA PRO SECURE\nClient Balance: ₹${Math.abs(b).toFixed(2)}\nThank you!`; window.open(`https://wa.me/91${p}?text=${encodeURIComponent(msg)}`); }
+        function openModal(h){ document.getElementById('modalBox').innerHTML=h; document.getElementById('modalOverlay').style.display='flex'; }
+        function closeModal(){ document.getElementById('modalOverlay').style.display='none'; }
+        window.onload=()=>{ lockApp(); };
+    </script>
 </body>
 </html>
